@@ -3,6 +3,8 @@ package pmaps
 import algebra.ring.AdditiveCommutativeGroup
 import spire.algebra._
 import shapeless.ops.tuple.Prepend
+import shapeless.syntax.std.tuple._
+
 
 import scala.language.higherKinds
 import scala.language.postfixOps
@@ -63,6 +65,21 @@ trait LowPriority1 extends LowPriority2{
       (x outerJoin y).mapValues(ev.plus _ tupled)
 
   }
+
+  implicit def pmapVectorSpace[K, V, D](implicit ev: VectorSpace[V, D], prepend: Prepend[V, V]): VectorSpace[PMap[K, V], D] = new VectorSpace[PMap[K, V], D] {
+
+    override implicit def scalar: Field[D] = implicitly
+
+    override def timesl(r: D, v: PMap[K, V]): PMap[K, V] = v.mapValues(vv => ev.timesl(r, vv))
+
+    override def negate(x: PMap[K, V]): PMap[K, V] = x.mapValues(ev.negate)
+
+    override def zero: PMap[K, V] = PMap.empty[K, V]
+
+    override def plus(x: PMap[K, V], y: PMap[K, V]): PMap[K, V] =
+      (x outerJoin y).mapValues(ev.plus _ tupled)
+
+  }
     
 }
 
@@ -96,6 +113,16 @@ trait LowPriority3{
     override def negate(x: PMapWDefault[K, V]): PMapWDefault[K, V] = x.mapValues(ev.negate)
 
     override def plus(x: PMapWDefault[K, V], y: PMapWDefault[K, V]): PMapWDefault[K, V] =
+      (x outerJoin y).mapValues(ev.plus _ tupled)
+  }
+
+  implicit def pmapIsCommutativeGrp[K, V](implicit ev: AdditiveCommutativeGroup[V]): AdditiveCommutativeGroup[PMap[K, V]] = new AdditiveCommutativeGroup[PMap[K, V]]{
+
+    override def zero: PMap[K, V] = PMap.empty[K, V]
+
+    override def negate(x: PMap[K, V]): PMap[K, V] = x.mapValues(ev.negate)
+
+    override def plus(x: PMap[K, V], y: PMap[K, V]): PMap[K, V] =
       (x outerJoin y).mapValues(ev.plus _ tupled)
   }
 }

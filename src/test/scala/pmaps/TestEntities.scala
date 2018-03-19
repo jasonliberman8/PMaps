@@ -1,5 +1,8 @@
 package pmaps
 
+import spire.implicits._
+
+
 private [pmaps] object TestEntities {
 
   case class Author(name: String)

@@ -14,32 +14,28 @@ object CanJoin extends CanJoinPriority1 {
 
   type Aux[A, B, C] = CanJoin[A, B] {type Out = C}
 
-  implicit def tuplePrependJoinBothTuple1s[A, B, Out](implicit prepend: Prepend.Aux[Tuple1[A], Tuple1[B], Out]): CanJoin.Aux[A, B, Out] = new CanJoin[A, B]{
+  implicit def tuple4tuple1[A1, A2, A3, A4, B1]: CanJoin.Aux[(A1, A2, A3, A4), B1, (A1, A2, A3, A4, B1)] = new CanJoin[(A1, A2, A3, A4), B1]{
+    override type Out = (A1, A2, A3, A4, B1)
+    override def join(a: (A1, A2, A3, A4), b: B1): Out = (a._1, a._2, a._3, a._4, b)
+  }
 
-    override type Out = prepend.Out
+  implicit def tuple3tuple1[A1, A2, A3, B1]: CanJoin.Aux[(A1, A2, A3), B1, (A1, A2, A3, B1)] = new CanJoin[(A1, A2, A3), B1]{
+    override type Out = (A1, A2, A3, B1)
+    override def join(a: (A1, A2, A3), b: B1): Out = (a._1, a._2, a._3, b)
+  }
 
-    override def join(a: A, b: B): Out = prepend(Tuple1(a), Tuple1(b))
+  implicit def tuple2tuple1[A1, A2, B1]: CanJoin.Aux[(A1, A2), B1, (A1, A2, B1)] = new CanJoin[(A1, A2), B1]{
+    override type Out = (A1, A2, B1)
+    override def join(a: (A1, A2), b: B1): Out = (a._1, a._2, b)
   }
 
 }
 
-trait CanJoinPriority1 extends CanJoinPriority2{
+trait CanJoinPriority1{
 
-  implicit def tuplePrependJoinTuple1[A, B, Out](implicit prepend: Prepend.Aux[Tuple1[A], B, Out]): CanJoin.Aux[A, B, Out] = new CanJoin[A, B]{
-
-    override type Out = prepend.Out
-
-    override def join(a: A, b: B): Out = prepend(Tuple1(a), b)
+  implicit def tuple1tuple1[A1, B1]: CanJoin.Aux[A1, B1, (A1, B1)] = new CanJoin[A1, B1]{
+    override type Out = (A1, B1)
+    override def join(a: A1, b: B1): Out = (a, b)
   }
-}
 
-
-trait CanJoinPriority2{
-
-  implicit def tuplePrependJoin[A: IsTuple, B, Out](implicit prepend: Prepend.Aux[A, B, Out]): CanJoin.Aux[A, B, Out] = new CanJoin[A, B]{
-
-    override type Out = prepend.Out
-
-    override def join(a: A, b: B): Out = prepend(a, b)
-  }
 }

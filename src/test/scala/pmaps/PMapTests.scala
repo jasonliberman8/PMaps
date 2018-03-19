@@ -2,12 +2,16 @@ package pmaps
 
 import org.scalatest.{FlatSpec, Matchers}
 import spire.implicits._
+import shapeless.syntax.std.tuple._
+
 import scala.util.Try
 import TestEntities._
+import shapeless.ops.tuple.Prepend
 
 
 
 class PMapTests extends FlatSpec with Matchers{
+
 
   "Equals " should "work as expected on the innerMap and default (if it exists)" in {
 
