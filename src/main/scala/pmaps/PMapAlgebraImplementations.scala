@@ -77,7 +77,7 @@ trait LowPriority1 extends LowPriority2{
     override def zero: PMap[K, V] = PMap.empty[K, V]
 
     override def plus(x: PMap[K, V], y: PMap[K, V]): PMap[K, V] =
-      (x outerJoin y).mapValues(ev.plus _ tupled)
+      (x.withDefaultZero outerJoin y.withDefaultZero).mapValues(ev.plus _ tupled).dropDefault
 
   }
     
@@ -123,6 +123,6 @@ trait LowPriority3{
     override def negate(x: PMap[K, V]): PMap[K, V] = x.mapValues(ev.negate)
 
     override def plus(x: PMap[K, V], y: PMap[K, V]): PMap[K, V] =
-      (x outerJoin y).mapValues(ev.plus _ tupled)
+      (x.withDefaultZero outerJoin y.withDefaultZero).mapValues(ev.plus _ tupled).dropDefault
   }
 }
